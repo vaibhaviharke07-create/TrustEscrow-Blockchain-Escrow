@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "TrustEscrow"
+description = "A blockchain escrow app for buyers and sellers to lock testnet funds in a Solidity smart contract, track delivery, release or refund payments, and handle disputes transparently."
+version = "1.0.0"
+id = "artifacts/trustescrow"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24768
+
+[services.development]
+run = "pnpm --filter @workspace/trustescrow run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/trustescrow", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/trustescrow/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24768"
+BASE_PATH = "/"
