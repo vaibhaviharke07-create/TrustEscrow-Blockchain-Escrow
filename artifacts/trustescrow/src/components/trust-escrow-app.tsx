@@ -99,6 +99,7 @@ export interface TrustEscrowAppProps {
   error?: string | null;
   successMessage?: string | null;
   demoMode?: boolean;
+  walletConnectionError?: string | null;
   onConnectWallet: () => void;
   onDisconnect: () => void;
   onCreateEscrow: (fields: CreateEscrowFields) => Promise<{ id: string } | void>;
@@ -159,6 +160,7 @@ export function TrustEscrowApp({
   error = null,
   successMessage = null,
   demoMode = false,
+  walletConnectionError = null,
   onConnectWallet,
   onDisconnect,
   onCreateEscrow,
@@ -345,7 +347,7 @@ export function TrustEscrowApp({
                 <button className="wallet-chip" onClick={copyAddress} title="Copy connected wallet address" data-testid="button-copy-wallet"><span className="wallet-identicon"><Wallet size={14} /></span><Mono>{shortAddress(wallet.address)}</Mono><span className="copy-label">{copied ? 'Copied' : <Copy size={12} />}</span></button>
                  <button className="icon-button" onClick={disconnectAndReset} title="Reset the wallet display in this app" aria-label="Reset wallet view" data-testid="button-disconnect"><LogOut size={16} /></button>
               </div>
-              ) : <div className="connect-actions">{!wallet?.installed && <><span className="metamask-required">MetaMask is required to interact with the blockchain.</span><a href="https://metamask.io/download/" target="_blank" rel="noreferrer" className="metamask-link header-metamask-link" data-testid="link-install-metamask">Get MetaMask <ExternalLink size={12} /></a></>}<button className="button button-primary connect-button" disabled={!wallet?.installed || wallet.connecting} title={!wallet?.installed ? 'MetaMask is required to interact with the blockchain.' : undefined} onClick={onConnectWallet} data-testid="button-connect-wallet"><Wallet size={15} />{wallet?.connecting ? 'Connecting…' : 'Connect wallet'}</button></div>}
+              ) : <div className="connect-actions">{!wallet?.installed && <><span className="metamask-required">MetaMask is required to interact with the blockchain.</span><a href="https://metamask.io/download/" target="_blank" rel="noreferrer" className="metamask-link header-metamask-link" data-testid="link-install-metamask">Get MetaMask <ExternalLink size={12} /></a></>}<button type="button" className="button button-primary connect-button" disabled={wallet?.connecting} aria-busy={wallet?.connecting || undefined} onClick={onConnectWallet} data-testid="button-connect-wallet"><Wallet size={15} />{wallet?.connecting ? 'Connecting…' : 'Connect wallet'}</button></div>}
             <button className={`button button-secondary demo-toggle ${demoMode ? 'demo-toggle-on' : ''}`} onClick={onToggleDemoMode} data-testid="button-toggle-demo">{demoMode ? 'Exit demo' : 'Demo data'}</button>
           </div>
         </header>
@@ -354,6 +356,7 @@ export function TrustEscrowApp({
           {demoMode && <div className="demo-ribbon"><ShieldAlert size={15} /><strong>DEMO DATA — NOT REAL TRANSACTIONS</strong><span>Illustrative records only. Nothing shown here represents a live chain event.</span></div>}
           {!contractReady && !demoMode && <div className="error-banner" role="status"><ShieldAlert size={17} /><div><strong>Live contract not configured.</strong><span>Deploy Escrow.sol to Sepolia, then set VITE_CONTRACT_ADDRESS and restart the app. Live balances, records, and actions are unavailable until then.</span></div></div>}
           {wallet?.address && !wallet.correctNetwork && <div className="error-banner network-warning" role="alert"><ShieldAlert size={17} /><div><strong>Wrong network. Please switch to the supported testnet.</strong><span>Transactions are disabled until MetaMask is connected to {wallet.networkName === 'Not connected' ? 'the supported testnet' : wallet.networkName}.</span></div><button onClick={onSwitchNetwork} className="button button-secondary error-retry" data-testid="button-switch-network">Switch network</button></div>}
+          {walletConnectionError && <div className="error-banner" role="alert"><ShieldAlert size={17} /><div><strong>Wallet connection failed.</strong><span>{walletConnectionError}</span></div></div>}
           {error && <div className="error-banner" role="alert"><ShieldAlert size={17} /><div><strong>We couldn’t refresh this workspace.</strong><span>{error}</span></div>{onRetry && <button onClick={onRetry} className="button button-secondary error-retry"><RefreshCw size={14} />Retry</button>}</div>}
           {successMessage && !demoMode && <div className="success-banner" role="status"><CheckCircle2 size={16} /><span>{successMessage}</span></div>}
           {isLoading ? (
