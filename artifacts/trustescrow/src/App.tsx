@@ -146,6 +146,7 @@ function Home() {
   const [dataAvailable, setDataAvailable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [connecting, setConnecting] = useState(false);
+  const [walletConnectionError, setWalletConnectionError] = useState<string | null>(null);
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -244,13 +245,14 @@ function Home() {
   const onConnectWallet = async () => {
     setConnecting(true);
     setError(null);
+    setWalletConnectionError(null);
     manuallyDisconnected.current = false;
     try {
       const snapshot = await connectWallet();
       setWallet(toUiWallet(snapshot, false));
       await refreshChainData();
     } catch (connectError) {
-      setError(connectError instanceof Error ? connectError.message : 'Wallet connection was not completed.');
+      setWalletConnectionError(connectError instanceof Error ? connectError.message : 'Wallet connection was not completed.');
     } finally {
       setConnecting(false);
     }
@@ -329,6 +331,7 @@ function Home() {
       error={demoMode ? null : error}
       successMessage={successMessage}
       demoMode={demoMode}
+      walletConnectionError={walletConnectionError}
       onConnectWallet={onConnectWallet}
       onDisconnect={onDisconnect}
       onCreateEscrow={onCreateEscrow}

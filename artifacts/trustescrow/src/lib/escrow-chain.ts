@@ -159,7 +159,7 @@ export function subscribeWallet(
 
 export async function connectWallet(): Promise<WalletSnapshot> {
   const ethereum = window.ethereum;
-  if (!ethereum) throw new Error("MetaMask is required to interact with the blockchain.");
+  if (!ethereum) throw new Error("Please install MetaMask or a compatible browser wallet to connect.");
   const accounts = (await ethereum.request({
     method: "eth_requestAccounts",
   })) as string[];
